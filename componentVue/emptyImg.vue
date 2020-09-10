@@ -1,7 +1,8 @@
 <template>
-    <div class="empty">
+    <div class="empty" :style="{position: isPosition ? 'absolute' : 'relative', minHeight: minHeight }">
         <img :src="img" alt="">
         <div class="txt">{{ txt }}</div>
+        <div v-if="showBtn" class="empty-btn" @click="onClickEmpty">{{ btnTxt }}</div>
     </div>
 </template>
 
@@ -16,10 +17,33 @@
             img: {
                 default: '',
                 type: String
+            },
+            btnTxt: {
+                default: '去登录',
+                type: String
+            },
+            showBtn: {
+                default: false,
+                type: Boolean
+            },
+            // 是否需要定位
+            isPosition: {
+                default: false,
+                type: Boolean
+            },
+            // 最小高度，需要带单位
+            minHeight: {
+                default: '',
+                type: String
             }
         },
         data () {
             return {
+            }
+        },
+        methods: {
+            onClickEmpty () {
+                this.$emit('empty-btn')
             }
         }
     }
@@ -27,9 +51,10 @@
 
 <style lang="less" scoped>
     .empty {
-        position: absolute;
+        /*position: relative;*/
+        /*position: absolute;*/
         top: 0;
-        z-index: 100;
+        /*z-index: 100;*/
         width: 100%;
         height: 100%;
         display: flex;
@@ -47,6 +72,17 @@
             padding-top: 340px;
             width: 320px;
             height: 320px;
+        }
+        .empty-btn {
+            margin-top: 36px;
+            width: 264px;
+            height: 80px;
+            line-height: 80px;
+            text-align: center;
+            background: #F8729A;
+            border-radius: 8px;
+            font-size: 28px;
+            color: #FFFFFF;
         }
     }
 </style>

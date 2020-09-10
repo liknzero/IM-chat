@@ -4,13 +4,14 @@
             safe-area-inset-bottom
             cancel-text="取消"
             close-on-click-action
-            @cancel="onCancel"
+            @cancel="showPay = false"
     >
         <div class="radio-title">选择支付方式</div>
-        <van-radio-group v-model="radio">
+        <van-radio-group v-model="radio" @change="onChangeRadio">
             <van-cell-group>
                 <van-cell
                         v-for="item in actionPay"
+                        :key="item.pay"
                         clickable
                         @click="radio = item.pay"
                 >
@@ -30,38 +31,77 @@
 </template>
 
 <script>
-    // TODO: 这里要做支付状态的筛选和选择状态的监听
     export default {
         name: "choosePayment",
         data () {
             return {
+                radio: null,
                 actionPay: [
                     {
                         pay: 2,
-                        name: '微信支付(推荐）',
+                        name: '微信支付',
                         icon: '/waps/images/icon-pay-wechat.png'
                     },
-                    {
-                        pay: 3,
-                        name: '支付宝支付',
-                        icon: '/waps/images/icon-pay-ali.png'
-                    },
-                ]
+                ],
+                showPay: false
             }
         },
         props: {
-            radio: {
-                type: Number,
-                default: 0
-            },
-            showPay: {
+            needDefault: {
                 type: Boolean,
-                default: false
+                default: true
+            }
+        },
+        created () {
+            const browser = window.findBrowser()
+            if (!browser.isWechat) {
+                this.actionPay.push({
+                    pay: 3,
+                    name: '支付宝支付',
+                    icon: '/waps/images/icon-pay-ali.png'
+                })
+            }
+            // 选择默认支付方式
+            if (this.needDefault) {
+                this.radio = this.actionPay[0].pay
+                this.$emit('change-radio', this.actionPay[0])
+            }
+        },
+        methods: {
+            onChangeRadio (event) {
+                this.showPay = false
+                if (!event && String(event) !== '0') return
+                const pay = this.actionPay.find(item => item.pay === event)
+                this.$emit('change-radio', pay)
             }
         }
     }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 
+    .radio-title {
+        height: 96px;
+        line-height: 96px;
+        font-size: 32px;
+        font-weight: bold;
+        color: #303033;
+        padding: 0 30px;
+    }
+    .van-radio-group {
+        .van-cell {
+            padding: 30px 30px;
+        }
+        .van-icon {
+            .van-icon__image {
+                width: 40px;
+                height: 40px;
+                padding-right: 20px;
+            }
+        }
+        .van-cell__title {
+            font-size: 30px;
+            color: #303033;
+        }
+    }
 </style>

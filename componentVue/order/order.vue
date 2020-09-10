@@ -1,43 +1,74 @@
 <template>
     <div>
-        <div class="order-list-box" v-for="item in orderArr">
+        <div class="order-list-box" v-for="(item, index) in orderArr" :key="item.order_no">
             <div class="order-info">
                 <div class="order-info-left">
-                    <p class="order-number">订单编号: 465462165465136164654</p>
-                    <p class="order-time">20202020202020202</p>
+                    <p class="order-number">订单编号: {{item.order_no}}</p>
+                    <p class="order-time">{{ item.order_at | getTime }}</p>
                 </div>
                 <div class="order-info-right">
-                    <div v-if="false" class="order-status">待支付</div>
-                    <div v-else class="order-status">
+                    <div v-if="item.order_status === 1" class="order-status">{{item.order_status_text}}</div>
+                    <div v-else class="order-status order-gray">
                         交易成功
                         <i></i>
-                        <img src="/waps/images/icon-delete-order.png" alt="">
+                        <img src="/waps/images/icon-delete-order.png" @click="onDeleteOrder(item.order_no, index)" alt="">
                     </div>
                 </div>
             </div>
             <div class="order-list">
-                <div class="order-item">
-                    <img src="/waps/images/icon-empty-collection.png" alt="" class="order-course-cover">
-                    <p class="order-course-content">亚马逊运营需要学习哪些知识点快来学习这节课揭发背后的秘密哈哈哈哈啊哈哈背后的秘密哈哈哈哈啊哈哈</p>
-                    <span class="order-course-price">¥ 1234</span>
+                <div class="order-item" v-for="itemPro in item.products">
+                    <div class="order-lf">
+                        <img :src="itemPro.variant_image" alt="" class="order-course-cover">
+                        <p class="order-course-content">{{itemPro.name}}</p>
+                    </div>
+                    <span class="order-course-price">¥ {{itemPro.unit_price}}</span>
                 </div>
             </div>
-            <div class="order-pay">实付：<span>¥323.00</span></div>
-            <div class="order-pay-btn">
-                <span class="cancel-btn">取消订单</span>
-                <span class="pay-btn">去支付</span>
+            <div class="order-pay">实付：<span>¥{{item.amount}}</span></div>
+            <div class="order-pay-btn" v-if="item.order_status === 1">
+                <span class="cancel-btn" @click="onCancelOrder(item.order_no, index)">取消订单</span>
+                <span class="pay-btn" @click="onPayment(item.order_no)">去支付</span>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+    import Dayjs from 'dayjs'
     export default {
         name: "order",
         props: {
+            orderStatus: {
+                type: Number,
+                default: 0
+            },
             orderArr: {
                 type: Array,
                 default: () => []
+            }
+        },
+        filters: {
+            getTime (time) {
+                return Dayjs(time * 1000).format('YYYY-MM-DD HH:mm:ss')
+            }
+        },
+        methods: {
+            onPayment (order_no) {
+                this.$emit('on-pay', order_no)
+            },
+            onCancelOrder (order_no, index) {
+                this.$emit('on-cancel', {
+                    order_no,
+                    index,
+                    order_status: this.orderStatus
+                })
+            },
+            onDeleteOrder (order_no, index) {
+                this.$emit('on-delete', {
+                    order_no,
+                    index,
+                    order_status: this.orderStatus
+                })
             }
         }
     }
@@ -86,6 +117,9 @@
                     padding: 20px 0 20px 20px;
                 }
             }
+            .order-gray {
+                color: #909099;
+            }
         }
     }
     .order-list {
@@ -106,9 +140,13 @@
                 padding: 0 30px 0 20px;
                 .line-clamp(3);
             }
+            .order-lf {
+                display: flex;
+            }
             .order-course-price {
                 flex-shrink: 0;
                 font-size: 24px;
+                line-height: 40px;
                 color: #2C2C33;
             }
         }
