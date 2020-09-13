@@ -1,0 +1,89 @@
+.line-clamp(@num:2){
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  display: -webkit-box;
+  -webkit-line-clamp: @num;  /*限制在一个块元素显示的文本的行数*/
+  -webkit-box-orient: vertical;
+}
+.scroll-style (@trackColor:#F4F4F5, @bgColor: #D8D8D8 ) {
+  &::-webkit-scrollbar-thumb {
+    background-color: @bgColor;
+  }
+  &::-webkit-scrollbar {
+    width: 4px;
+    background-color: @bgColor;
+  }
+  &::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px @trackColor;
+    background-color: @trackColor;
+  }
+}
+/*单条border样式 scss方法名*/
+.border-left-1px (@color) {
+  content: '';
+  position: absolute;
+  background: @color;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 1px;
+  transform: scaleX(0.5);
+  transform-origin: left 0;
+  -webkit-transform: scaleX(.5);
+}
+.border-right-1px (@color) {
+  content: '';
+  position: absolute;
+  background: @color;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 1px;
+  transform: scaleX(0.5);
+  transform-origin: right 0;
+  -webkit-transform: scaleX(.5);
+}
+.border-bottom-1px (@color) {
+  content: '';
+  position: absolute;
+  background: @color;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  transform: scaleY(0.5);
+  -webkit-transform: scaleY(.5);
+  transform-origin: 0 bottom;
+}
+.border-top-1px (@color) {
+  content: '';
+  position: absolute;
+  background: @color;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  transform: scaleY(0.5);
+  -webkit-transform: scaleY(.5);
+  transform-origin: 0 top;
+}
+
+/*四条border样式*/
+.all-border-1px (@color, @radius) {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 2px solid @color;
+  border-radius: @radius * 2px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 200%;
+  height: 200%;
+  -webkit-transform: scale(0.5);
+  transform: scale(0.5);
+  -webkit-transform-origin: left top;
+  transform-origin: left top;
+}
+
