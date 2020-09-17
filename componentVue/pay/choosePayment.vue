@@ -53,7 +53,7 @@
             }
         },
         created () {
-            const browser = window.findBrowser()
+            const browser = window.findBrowser
             if (!browser.isWechat) {
                 this.actionPay.push({
                     pay: 3,

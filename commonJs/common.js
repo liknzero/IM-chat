@@ -1,6 +1,10 @@
 // 组件按需引入
 // 非必须组件不要引入，尽量控制公共js体积
 import vConsole from './vConsole'
+import '../../assets/commonJs/reloadPage' // 全局记录当前路由堆栈 // 记录参数为oldUrl
+import '../../assets/commonJs/wechatShare' // 全局设置微信分享事件
+require('promise.prototype.finally').shim(); // 引入promise兼容
+
 import {
     Button,
     PullRefresh,
@@ -87,7 +91,6 @@ window.Ajax = function ({
         // 做相关loading操作
     }
     return new Promise((resolve, reject) => {
-        console.log('type---------', type)
         $.ajax({
             url,
             type,
@@ -152,13 +155,16 @@ window.transformArrayBufferToBase64 = function (buffer) {
     return "data:image/png;base64," + window.btoa(binary)
 }
 
-/*
+/**
 * 获取location历史页面
 * */
 window.historyHasPrev = function () {
+    /*
+    * 这里存的方法在assets/commonJs/reloadPage中统一记录
+    * */
     document.referrer === ''
         ? window.location.href = '/wap/'
-        : window.history.go(-1)
+        : window.location.replace(JSON.parse(window.localStorage.getItem('oldUrl'))[0])
 }
 
 /**
@@ -233,6 +239,22 @@ window.removeURLParameter = function (parameter, url) {
     }
     return url;
 }
+//替换指定传入参数的值,key为参数,value为新值
+window.replaceParamVal = function (key, value, url) {
+    let uri = url || window.location.href
+    if(!value) {
+        return uri;
+    }
+    var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+    var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+    console.log('uri.match(re)', uri.match(re))
+    if (uri.match(re)) {
+        return uri.replace(re, '$1' + key + "=" + value + '$2');
+    }
+    else {
+        return uri + separator + key + "=" + value;
+    }
+}
 // 复制手机号到剪切板
 window.onCopyPhone = function (number) {
     let input = document.createElement('input');
@@ -248,7 +270,7 @@ window.onCopyPhone = function (number) {
     document.body.removeChild(input);
 }
 // 判断当前打开的浏览器
-window.findBrowser = function () {
+window.findBrowser = (function () {
     var browser = {
         versions: function () {
             var u = navigator.userAgent,
@@ -301,4 +323,37 @@ window.findBrowser = function () {
         theBrowser.prot = 'mobile'
     }
     return theBrowser
+})()
+
+
+
+/*-----------------------------------工具类方法start------------------------------------*/
+/**
+ * 微信登录获取code码
+ */
+window.onGetLoginCode = function ({ appid = window.APP_ID, path = '', scope }) {
+    const { origin, href } = window.location
+    const url = encodeURIComponent(`${path ? origin + path : href }}`)
+    const timestamp = new Date().getTime()
+    const wechatUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${url}&response_type=code&scope=${scope}&state=${timestamp}#wechat_redirect`
+    window.location.replace(wechatUrl)
 }
+
+/**
+ * 跳转课程详情
+ * */
+window.onGetCourseDetail = function ({course_type, course_id}) {
+    let url = ''
+    switch (course_type) {
+        case 1:
+            url = `/wap/courses/${course_id}`
+            break;
+        case 2:
+            url = `/wap/live-courses/${course_id}`
+            break;
+        default:
+            console.error('请检查课程类型')
+    }
+    window.location.href = url
+}
+/*-----------------------------------工具类方法end------------------------------------*/

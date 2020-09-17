@@ -3,7 +3,7 @@
             :preview-image="false"
             :preview-full-image="false"
             :deletable="false"
-            :max-size="maxSize * 1024"
+            :max-size="maxSize * 1024 * 1024"
             @oversize="onOverSize"
             :before-read="onFileLoadBefore"
             :after-read="onFileLoadAfter"
@@ -18,7 +18,7 @@
         props: {
             maxSize: {
                 type: Number,
-                default: 40
+                default: 5
             },
             fileType: {
                 type: String,
@@ -27,7 +27,7 @@
         },
         methods: {
             onOverSize ({ file: { name } }) {
-                this.$toast(`${name}过大，请将图片大小控制在${this.maxSize}Kb以内`)
+                this.$toast(`${name}过大，请将图片大小控制在${this.maxSize}Mb以内`)
             },
             onFileLoadBefore (file) {
                 console.log(2, file.type, file.type === 'image/jpeg')

@@ -16,15 +16,15 @@
                 </div>
             </div>
             <div class="order-list">
-                <div class="order-item" v-for="itemPro in item.products">
+                <div class="order-item" v-for="itemPro in item.products" @click="onGetDetail(itemPro)">
                     <div class="order-lf">
                         <img :src="itemPro.variant_image" alt="" class="order-course-cover">
                         <p class="order-course-content">{{itemPro.name}}</p>
                     </div>
-                    <span class="order-course-price">¥ {{itemPro.unit_price}}</span>
+                    <span class="order-course-price">¥ {{itemPro.unit_price / 100 }}</span>
                 </div>
             </div>
-            <div class="order-pay">实付：<span>¥{{item.amount}}</span></div>
+            <div class="order-pay">实付：<span>¥{{item.amount / 100 }}</span></div>
             <div class="order-pay-btn" v-if="item.order_status === 1">
                 <span class="cancel-btn" @click="onCancelOrder(item.order_no, index)">取消订单</span>
                 <span class="pay-btn" @click="onPayment(item.order_no)">去支付</span>
@@ -53,6 +53,9 @@
             }
         },
         methods: {
+            onGetDetail ({variant_id: course_id, course_type }) {
+                window.onGetCourseDetail({course_type, course_id})
+            },
             onPayment (order_no) {
                 this.$emit('on-pay', order_no)
             },

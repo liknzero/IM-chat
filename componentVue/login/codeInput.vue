@@ -52,9 +52,13 @@
                 this.$emit('input-handle', this.code)
             },
             onSendCode () {
+                console.log(123123123123)
                 if (this.isCodeDisable) return
+                console.log(1)
                 if (this.isSend) return
+                console.log(2)
                 if (this.getTruePhone(this.phone)) return
+                console.log(3)
                 this.isCodeDisable = true
                 Ajax({
                     url: '/api/send-sms',
